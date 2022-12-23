@@ -671,7 +671,7 @@ extern void add_code_label( int address );
 
 // XXX
 void add_code_label( int address ) {
-  printf("*** add_code_label:  %d decimal.\n", (int)(short)address);
+  printf("*** add_code_label:  %d.\n", (int)(short)address);
 }
 
 unsigned Dasm6309 (char *buffer, int pc, unsigned char *memory, size_t memory_size)
