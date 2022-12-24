@@ -1,37 +1,64 @@
 # disasm6309
-A quick hack to disassemble a scrap of 6809 code.
+A quick hack to disassemble raw scraps of 6809/6309 code,
+based on code by tim lindner, Sean Riddle, and possibly others.
 
-The scrap is hardcoded into main.c,
-but it would be easy to change it to load it from somewhere.
+See `6309dasm.c` for license info.
+
+The raw 6809/6309 machine code, starting at address 0, is stdin.
 
 ```
-$ make
+$ hd /tmp/raw.out
+00000000  34 40 33 e4 8e 00 64 35  c0 34 40 33 e4 35 c0 34  |4@3...d5.4@3.5.4|
+00000010  40 32 7e 33 e4 af c4 17  ff e6 1e 01 e3 c4 1e 01  |@2~3............|
+00000020  32 62 35 c0 34 40 32 7e  33 e4 af c4 ae c4 1e 01  |2b5.4@2~3.......|
+00000030  e3 c4 1e 01 1e 01 e3 46  1e 01 32 62 35 c0 34 40  |.......F..2b5.4@|
+00000040  32 7e 33 e4 af c4 17 ff  b7 32 62 35 c0 17 00 03  |2~3......2b5....|
+00000050  17 ff eb 34 40 33 e4 8e  00 07 35 c0              |...4@3....5.|
+0000005c
+$ make && ./a.out < /tmp/raw.out
 gcc -g main.c 6309dasm.c
-$ ./a.out
-0000:  1f 10       == tfr   x,d
-0002:  f7 ff 01       == stb   $FF01
-*** add_code_label:  -5.
-0005:  20 f9       == bra   _fffffffb
-0007:  10 ce fd fe       == lds   #$FDFE
-000b:  ce 00 00       == ldu   #$0000
-000e:  10 ae c1       == ldy   ,u++
-0011:  10 8c 00 00       == cmpy  #$0000
-*** add_code_label:  6.
-0015:  27 04       == beq   _0006
-0017:  ad a4       == jsr   ,y
-*** add_code_label:  -11.
-0019:  20 f3       == bra   _fffffff5
-001b:  1c af       == andcc #$00AF
-001d:  bd 00 00       == jsr   $00
-0020:  ce 00 00       == ldu   #$0000
-0023:  10 ae c1       == ldy   ,u++
-0026:  10 8c 00 00       == cmpy  #$0000
-*** add_code_label:  6.
-002a:  27 04       == beq   _0006
-002c:  ad a4       == jsr   ,y
-*** add_code_label:  -11.
-002e:  20 f3       == bra   _fffffff5
-0030:  7e 00 00       == jmp   $00
-0033:  3b       == rti
+0000:  3440          pshs  u
+0002:  33e4          leau  ,s
+0004:  8e0064        ldx   #$0064
+0007:  35c0          puls  u,pc
+0009:  3440          pshs  u
+000b:  33e4          leau  ,s
+000d:  35c0          puls  u,pc
+000f:  3440          pshs  u
+0011:  327e          leas  -2,s
+0013:  33e4          leau  ,s
+0015:  afc4          stx   ,u
+0017:  17ffe6        lbsr  _0000
+001a:  1e01          exg   d,x
+001c:  e3c4          addd  ,u
+001e:  1e01          exg   d,x
+0020:  3262          leas  2,s
+0022:  35c0          puls  u,pc
+0024:  3440          pshs  u
+0026:  327e          leas  -2,s
+0028:  33e4          leau  ,s
+002a:  afc4          stx   ,u
+002c:  aec4          ldx   ,u
+002e:  1e01          exg   d,x
+0030:  e3c4          addd  ,u
+0032:  1e01          exg   d,x
+0034:  1e01          exg   d,x
+0036:  e346          addd  6,u
+0038:  1e01          exg   d,x
+003a:  3262          leas  2,s
+003c:  35c0          puls  u,pc
+003e:  3440          pshs  u
+0040:  327e          leas  -2,s
+0042:  33e4          leau  ,s
+0044:  afc4          stx   ,u
+0046:  17ffb7        lbsr  _0000
+0049:  3262          leas  2,s
+004b:  35c0          puls  u,pc
+004d:  170003        lbsr  _0053
+0050:  17ffeb        lbsr  _003e
+0053:  3440          pshs  u
+0055:  33e4          leau  ,s
+0057:  8e0007        ldx   #$0007
+005a:  35c0          puls  u,pc
 $
 ```
